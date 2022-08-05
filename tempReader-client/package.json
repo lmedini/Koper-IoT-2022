@@ -9,6 +9,9 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@serialport/parser-readline": "^10.3.0",
+    "axios": "^0.27.2",
+    "node-fetch": "^3.2.10",
     "serialport": "^10.4.0"
   }
 }
