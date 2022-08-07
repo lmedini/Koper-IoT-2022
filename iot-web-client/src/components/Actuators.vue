@@ -1,5 +1,6 @@
 <script>
 import { ref } from "vue";
+import { mapState } from 'pinia';
 import { useStore } from "@/stores/store";
 import RadioButton from "./RadioButton.vue";
 
@@ -34,10 +35,14 @@ export default {
       type,
       title,
       options,
-      choice: 'none',
-      updateActuators: store.updateActuators
+      choice: store.choice,
+      updateActuators: store.updateActuators,
+      
     };
   },
+  computed: {
+    getChoice: mapState(useStore, ['choice'])
+  }
 };
 </script>
 
@@ -47,7 +52,7 @@ export default {
       :type="type"
       :title="title"
       :options="options"
-      :choice="this.updateActuators()"
+      :choice="choice"
     />
   </div>
 </template>
