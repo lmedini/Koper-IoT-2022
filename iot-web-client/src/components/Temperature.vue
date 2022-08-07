@@ -42,7 +42,7 @@ export default {
     };
   },
   created() {
-    setInterval(this.updateTemperature, 1000);
+    setInterval(this.updateTemperature, 5000);
   },
 };
 

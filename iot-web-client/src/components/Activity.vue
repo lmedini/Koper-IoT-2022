@@ -16,7 +16,7 @@ export default {
     };
   },
   created() {
-    setInterval(this.updateActivity, 1000);
+    setInterval(this.updateActivity, 5000);
   },
 }
 </script>

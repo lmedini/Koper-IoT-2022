@@ -6,7 +6,7 @@ import HelloWorld from './components/HelloWorld.vue'
 
 <template>
   <header>
-    <img alt="Vue logo" class="logo" src="@/assets/logo-icon.webp" height="125" />
+    <img alt="Vue logo" class="logo" src="@/assets/logo.png" height="125" />
 
     <div class="wrapper">
       <HelloWorld msg="My fancy temperature regulation app!" />
