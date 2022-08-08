@@ -1,6 +1,6 @@
 # Activity-based temperature regulation WoT application
 
-![./dashboard.jpeg]
+![dashboard](./dashboard.jpeg)
 
 ## Context
 
