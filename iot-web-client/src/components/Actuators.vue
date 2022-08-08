@@ -16,7 +16,7 @@ export default {
     };
   },
   created() {
-    setInterval(this.updateActuators, 1000);
+    setInterval(this.updateActuators, 5000);
   },
   setup() {
     const store = useStore();

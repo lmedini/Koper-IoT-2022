@@ -3,6 +3,7 @@ import { defineStore } from 'pinia'
 // The base URL for the API.
 // Better to use an URL on the same server to avoid CORS issues
 const API_SERVER_BASE_URL = "../iot-api/";
+const MAX_ADAPTATION_VALUE = 5;
 
 export const useStore = defineStore({
   id: 'regulationStore',
@@ -24,8 +25,7 @@ export const useStore = defineStore({
       // Send request to the server and update the temperature variable
       //this.temperature = 15 + Math.random() * Math.floor(25);
       fetch(API_SERVER_BASE_URL + "temp/0").then(res => res.json()).then((json) => {
-        const table = json.temperature_values;
-        this.temperature = table[table.length - 1];
+        this.temperature = json.temperature_values;
       })
     },
 
@@ -33,8 +33,11 @@ export const useStore = defineStore({
       // Send request to the server and update the activity variable
       //this.activity = Math.random() * Math.floor(100);
       fetch(API_SERVER_BASE_URL + "act/0").then(res => res.json()).then((json) => {
-        const table = json.activity_values;
-        this.activity = table[table.length - 1];
+        const oldAct = this.activity;
+        this.activity = json.activity_values;
+        // Adapt the tresholds
+        this.minT -= (this.activity - oldAct) * MAX_ADAPTATION_VALUE / 100;
+        this.maxT -= (this.activity - oldAct) * MAX_ADAPTATION_VALUE / 100;
       })
 
     },
@@ -64,21 +67,19 @@ export const useStore = defineStore({
       let choice, response, json, table;
       response = await fetch(API_SERVER_BASE_URL + "heat/0");
       json = await response.json();
-      table = json.heat_values;
-      const heatValue = table[table.length - 1];
+      const heatValue = json.heat_values;
 
       response = await fetch(API_SERVER_BASE_URL + "cool/0");
       json = await response.json();
-      table = json.cool_values;
-      const coolValue = table[table.length - 1];
+      const coolValue = json.cool_values;
 
       if (this.temperature < this.minT) {
         choice = "heat";
-        if (heatValue === "False") { // if heater was not already started
+        if (!heatValue) { // if heater was not already started
           console.log('HEAT');
           // send heating request
           fetch(API_SERVER_BASE_URL + "heat/1", { method: "PUT"});
-          if (coolValue === "True") { // if the cooler was also on
+          if (coolValue) { // if the cooler was also on
             // send not cooling request
             fetch(API_SERVER_BASE_URL + "cool/0", { method: "PUT"});
           }
@@ -86,11 +87,11 @@ export const useStore = defineStore({
       } else {
         if (this.temperature > this.maxT) {
           choice = "cool";
-          if (coolValue === "False") { // if cooler was not already started
+          if (!coolValue) { // if cooler was not already started
             console.log('COOL');
             // send cooling request
             fetch(API_SERVER_BASE_URL + "cool/1", { method: "PUT"});
-            if (heatValue === "True") { // if the heater was also on
+            if (heatValue) { // if the heater was also on
               // send not heating request
               fetch(API_SERVER_BASE_URL + "heat/0", { method: "PUT"});
             }
@@ -98,11 +99,11 @@ export const useStore = defineStore({
         } else {
           choice = "none";
           // Shut everything off
-          if (heatValue === "True") {
+          if (heatValue) {
             // send not heating request
             fetch(API_SERVER_BASE_URL + "heat/0", { method: "PUT"});
           }
-          if (coolValue === "True") {
+          if (coolValue) {
             // send not cooling request
             fetch(API_SERVER_BASE_URL + "cool/0", { method: "PUT"});
           }
