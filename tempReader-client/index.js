@@ -3,7 +3,7 @@ const { ReadlineParser } = require('@serialport/parser-readline')
 const axios = require('axios').default
 
 // TODO: configure the port name here
-const portName = 'COM12'
+const portName = 'COM11'
 
 // Create a port
 const port = new SerialPort({
