@@ -1,11 +1,16 @@
+"""
+  Author: Niki Hrovatin
+  e-mail: niki.hrovatin@famnit.upr.si
+  Date: 08.08.2022
+  Activity detector developed on the workshop Koper-IoT-2022 held at InnoRenewCoe in Izola.
+"""
+
 import serial
 import time
 import my_client as my_client
 import step_counter
 
-ser = None
-
-SCAL = 9  # scale the number of steps (5s measurements) to steps per minute
+ser = None  # serial communication
 
 
 def setup():
@@ -15,7 +20,44 @@ def setup():
     for t in range(200):
         line = ser.readline()   # throw away first line
 
-# delta is the number of seconds to report
+
+"""
+Uses step_counter.py to count the number of steps
+Reports steps per minute on 5s interval
+"""
+
+# scale the number of steps (5s measurements) to steps per minute, should be 11
+SCAL = 9
+# set to 9 to have the number of steps in the range 0 - 100
+
+
+def count_steps():
+    global SCAL
+    detector = step_counter.Detector()
+    c = 0
+    start = time.time()
+    while True:
+        line = ser.readline()   # read a byte
+        if len(line) > 2:
+            string = line.decode().rstrip('\r\n')
+            counts = string.split(",")
+            rear = int(counts[1])  # only rear sensor
+            if detector.detect(rear):
+                c += 2  # each detection is 2 steps, since the sensor is on one shoe
+                print("Step number: ", c)
+        end = time.time()
+        if end - start > 5:
+            start = time.time()
+            c = c * SCAL
+            print("Steps per minute: ", c)
+            my_client.put_activity(c)  # send steps to the server
+            c = 0
+
+
+"""
+testing function
+delta is the number of seconds to report
+"""
 
 
 def activity_detection(delta):
@@ -37,6 +79,11 @@ def activity_detection(delta):
     ser.close()
 
 
+"""
+Used to record data for analysis
+"""
+
+
 def record_data():
     while True:
         line = ser.readline()   # read a byte
@@ -46,31 +93,6 @@ def record_data():
             #counts = string.split(",")
             print(string)
     ser.close()
-
- # report every 5 seconds and report in steps per minute
-
-
-def count_steps():
-    global SCAL
-    detector = step_counter.Detector()
-    c = 0
-    start = time.time()
-    while True:
-        line = ser.readline()   # read a byte
-        if len(line) > 2:
-            string = line.decode().rstrip('\r\n')
-            counts = string.split(",")
-            rear = int(counts[1])  # only rear sensor
-            if detector.detect(rear):
-                c += 2
-                print("Step number: ", c)
-        end = time.time()
-        if end - start > 5:
-            start = time.time()
-            c = c * SCAL  # convert in steps per minute should be 11 for maximum
-            print("Steps per minute: ", c)
-            my_client.put_activity(c)
-            c = 0
 
 
 if __name__ == "__main__":
