@@ -4,7 +4,7 @@
 
 This project was realized at InnoRenew CoE / Primorska University, in Koper, Slovenia, in August 2022.
 It was funded by an Erasmus+ exchange between Université Claude Bernard Lyon 1, France, and University of Primorska.
-The aim was to give lectures and organize practical sessions about Internet of Things (IoT), Web of Things (WoT), and a bit of Web programming.
+The aim was to give lectures ([part 1](https://perso.liris.cnrs.fr/lionel.medini/enseignement/Koper-2022/1-IoT-and-IA-2022.pdf), [part 2](https://perso.liris.cnrs.fr/lionel.medini/enseignement/Koper-2022/2-Hardware.pdf) & [part 3](https://perso.liris.cnrs.fr/lionel.medini/enseignement/Koper-2022/3-Software.pdf)) and organize practical sessions about Internet of Things (IoT), Web of Things (WoT), and a bit of Web programming.
 
 ## Scenario
 
@@ -44,7 +44,22 @@ Note that this application follows (some of) the REST principles:
 
 ## Installation:
 
-By cloning the repo and installing the software parts on the machines connected to the different arduinos, you will have done most of the job.
+By cloning the repo and deploying the software parts on the machines connected to the different arduinos using the regular install procedure for each language, you will have done most of the job:
+
+1. [REST server + actuators control](https://github.com/lmedini/Koper-IoT-2022/tree/main/IoTServer_REST): execute as Python script
+2. [arduino code for the temperature sensor](https://github.com/lmedini/Koper-IoT-2022/blob/main/Temp_Screen/Temp_Screen.ino): deploy using IDE
+3. [client code for the temperature sensor](https://github.com/lmedini/Koper-IoT-2022/tree/main/tempReader-client): npm install; node index.js
+4. [arduino code for the motion sensors](https://github.com/lmedini/Koper-IoT-2022/blob/main/activity-step-counter/tilt_reader.ino): deploy using IDE
+5. [client code for motion sensors](https://github.com/lmedini/Koper-IoT-2022/tree/main/activity-step-counter) (only Python files): execute as Python script
+6. [GUI client](https://github.com/lmedini/Koper-IoT-2022/tree/main/iot-web-client): npm install; npm run build; copy *dist* dir on static server
+
 Just eventually remember that:
 
-- for the demo, to avoid cross-origin problems with the GUI client, we built it and deployed it on an [nginx server](https://nginx.org/) so that the server servez the GUI as static content and is configured as proxy to the python server (with base URL */iot-api/*).
+- for the demo, to avoid cross-origin problems with the GUI client, we built it and deployed it on an [nginx server](https://nginx.org/) so that the server serves the GUI as static content and is configured as a reverse proxy to the python server (with base URL */iot-api/*) for the GUI. See the [docs](https://docs.nginx.com/nginx/admin-guide/web-server/reverse-proxy/) here. Hence, it can send requests to the sensors and actuators, through the same origin.
+- Arduino clients are plugged in USB to a serial port of the machine. This port can change each time you plug it. You should then update the port name, for instance by starting an Arduino IDE and see on which port it detects the Arduino.
+- Of course, the URL of the Python server can change. It must be configured in the sensor clients, as well as in the reverse proxy (nginx) configuration.
+- In the GUI, the frequency of the updates / queries is defined in the Vue components (Avtivity, Actuators and Temperature). If you want to modify this, you should modify the parameter of the *setInterval(..., 5000)* function in the *created()* bloc.
+
+## Usage
+
+I could have added the video, but I'm not much of a film maker... ;)
