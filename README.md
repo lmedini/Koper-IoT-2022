@@ -32,12 +32,16 @@ We used some physical hardware lent by Université Claude Bernard Lyon 1:
 ### Software
 
 - **Web server**: written in Python / FLask. It exposes an Web API that handles the sensors and actuator values. It is also connected to an arduino board that controls the actuators (heater and cooler) using [Pymata](https://pypi.org/project/PyMata/) (Python Firmata client) and controls them according to the HTTP requests it received.
+<br><img style="max-height: 150px" src="./actuators.jpeg">
 - **Sensor clients**:
   - **Temperature client**: written in JavaScript / Node, and reading data on the Serial port. These data are sent by another arduino that queries a temperature sensor (and displays the value on a LCD screen BTW), and sends these data over the USB cable every second. The client listens to these events and sends an HTTP request to the server to update the current temperature.
+  <br><img style="max-height: 150px" src="./temperature-sensor.jpeg">
   - **Step counter client**: written in Python, and reading data on the Serial port. These data are sent by a third arduino that queries a motion sensor and sends these data over the USB cable every 500ms. The client then sends a value between 0 and 120 steps by minute to the server every 5 seconds.
+  <br><img style="max-height: 150px" src="./motion-sensor.jpeg">
 - **GUI client**: written in JS / Vue3; this is the Single-Page Application used by the user to:
   - set their preferences as 2 temeperatre thresholds
   - monitor the system sensor and actuator states on the dashboard
+  <br><img style="max-height: 150px" src="./preferences.jpeg">
 
 Note that this application follows (some of) the REST principles:
 
