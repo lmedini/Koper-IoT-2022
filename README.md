@@ -27,9 +27,24 @@ We used some physical hardware lent by Université Claude Bernard Lyon 1:
 - 2 LEDs (red and blue)
 - 1 LCD screen
 
-### Sotwware
+### Software
 
 - **Web server**: written in Python / FLask. It exposes an Web API that handles the sensors and actuator values. It is also connected to an arduino board that controls the actuators (heater and cooler) using [Pymata](https://pypi.org/project/PyMata/) (Python Firmata client) and controls them according to the HTTP requests it received.
 - **Sensor clients**:
   - **Temperature client**: written in JavaScript / Node, and reading data on the Serial port. These data are sent by another arduino that queries a temperature sensor (and displays the value on a LCD screen BTW), and sends these data over the USB cable every second. The client listens to these events and sends an HTTP request to the server to update the current temperature.
-  - **Step counter client**:...
+  - **Step counter client**: written in Python, and reading data on the Serial port. These data are sent by a third arduino that queries a motion sensor and sends these data over the USB cable every 500ms. The client then sends a value between 0 and 120 steps by minute to the server every 5 seconds.
+- **GUI client**: written in JS / Vue3; this is the Single-Page Application used by the user to:
+  - set their preferences as 2 temeperatre thresholds
+  - monitor the system sensor and actuator states on the dashboard
+
+Note that this application follows (some of) the REST principles:
+
+- the server is responsible to manage the physical devices (sensors and actuators) and exposes them as resources,
+- the client manages the application flow by querying and acting on these resources, as well as handling the user's data and application logic.
+
+## Installation:
+
+By cloning the repo and installing the software parts on the machines connected to the different arduinos, you will have done most of the job.
+Just eventually remember that:
+
+- for the demo, to avoid cross-origin problems with the GUI client, we built it and deployed it on an [nginx server](https://nginx.org/) so that the server servez the GUI as static content and is configured as proxy to the python server (with base URL */iot-api/*).
