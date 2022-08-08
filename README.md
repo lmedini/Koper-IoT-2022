@@ -1,5 +1,7 @@
 # Activity-based temperature regulation WoT application
 
+![./dashboard.jpeg]
+
 ## Context
 
 This project was realized at InnoRenew CoE / Primorska University, in Koper, Slovenia, in August 2022.
